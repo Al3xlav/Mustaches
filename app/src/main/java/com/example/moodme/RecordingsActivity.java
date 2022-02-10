@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -55,9 +56,14 @@ public class RecordingsActivity extends AppCompatActivity {
             keys[i] = list.get(i).getKey();
             Log.d("KEY", String.valueOf(keys[i]));
             videoName[i] = list.get(i).getTag();
-            Log.d("Video tag", videoName[i]);
-            Log.d("Video tag", "LOL");
-            duration[i] = list.get(i).getDuration();
+
+            duration[i] = "";
+
+            Double dur = Double.parseDouble(list.get(i).getDuration());
+            if ((int)(dur / 60) >= 1) {
+                duration[i] += (int) (dur / 60) + " min ";
+            }
+            duration[i] += (int) (dur % 60) + " sec";
             path[i] = list.get(i).getVideo();
             //Log.d("***************", path[i]);
             image[i] = getVideoThumb(path[i]);
@@ -99,9 +105,10 @@ public class RecordingsActivity extends AppCompatActivity {
         // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
         // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
+        Button tagBtn = popupView.findViewById(R.id.tagBtn);
+        tagBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View view) {
                 EditText tagField = popupView.findViewById(R.id.tagField);
                 if (tagField.getText().equals("")) {
                     Toast.makeText(getApplicationContext(), "All Field is required ....", Toast.LENGTH_SHORT).show();
@@ -110,7 +117,6 @@ public class RecordingsActivity extends AppCompatActivity {
                     DatabaseClass.getDatabase(getApplicationContext()).getDao().updateData(video, duration, newTag, key);
                     finish();
                 }
-                return true;
             }
         });
     }

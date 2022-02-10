@@ -161,13 +161,15 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
         // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
         // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
+        Button tagBtn = popupView.findViewById(R.id.tagBtn);
+        tagBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View view) {
                 EditText tagField = popupView.findViewById(R.id.tagField);
                 tag = tagField.getText().toString();
                 tEnd = System.currentTimeMillis();
-                String duration = String.valueOf(tEnd - tStart / 1000.0);
+                Log.d("DUR", String.valueOf((tEnd - tStart) / 1000.0));
+                String duration = String.valueOf((tEnd - tStart) / 1000.0);
                 Log.d("DATA", duration);
                 Log.d("DATA", tag);
                 Log.d("DATA", video.getAbsolutePath());
@@ -178,7 +180,10 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
                 model.setTag(tag);
                 DatabaseClass.getDatabase(getApplicationContext()).getDao().insertAllData(model);
                 popupWindow.dismiss();
-                return true;
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
             }
         });
     }
@@ -406,10 +411,6 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
                         public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                             video = vidFile;
                             saveTag();
-//                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                            startActivity(intent);
                         }
 
                         @Override

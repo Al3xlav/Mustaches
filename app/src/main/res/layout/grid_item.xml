@@ -25,9 +25,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/item_tag"
-        android:textSize="24dp"
+        android:textSize="20dp"
         android:text="LOL"
-        android:layout_marginTop="24dp" />
+        android:layout_marginTop="3dp" />
 
 
 

@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private String tag;
     private long tStart;
     private long tEnd;
+    private File video;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -149,16 +150,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 EditText tagField = popupView.findViewById(R.id.tagField);
-                setTag(tagField.getText().toString());
-                Log.d("TAG1", "STARTED");
+                tag = tagField.getText().toString();
+                tEnd = System.currentTimeMillis();
+                String duration = String.valueOf(tEnd - tStart / 1000.0);
+                Log.d("DATA", duration);
+                Log.d("DATA", tag);
+                Log.d("DATA", video.getAbsolutePath());
+                Toast.makeText(MainActivity.this, "Video has been saved", Toast.LENGTH_SHORT).show();
+                UserModel model = new UserModel();
+                model.setVideo(video.getAbsolutePath());
+                model.setDuration(duration);
+                model.setTag(tag);
+                DatabaseClass.getDatabase(getApplicationContext()).getDao().insertAllData(model);
                 popupWindow.dismiss();
                 return true;
             }
         });
-    }
-
-    private void setTag(String tag) {
-        this.tag = tag;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -296,20 +303,8 @@ public class MainActivity extends AppCompatActivity {
                     new VideoCapture.OnVideoSavedCallback() {
                         @Override
                         public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
+                            video = vidFile;
                             saveTag();
-                            Log.d("TAG2", "STARTED");
-                            tEnd = System.currentTimeMillis();
-                            File video = vidFile;
-                            String duration = String.valueOf(tEnd - tStart / 1000.0);
-                            Toast.makeText(MainActivity.this, "Video has been saved", Toast.LENGTH_SHORT).show();
-                            UserModel model = new UserModel();
-                            model.setVideo(video.getAbsolutePath());
-                            model.setDuration(duration);
-                            model.setTag(tag);
-                            if (tag.equals("")) {
-                                Log.d("The tag is", "NULL");
-                            }
-                            DatabaseClass.getDatabase(getApplicationContext()).getDao().insertAllData(model);
 //                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
 //                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 //                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

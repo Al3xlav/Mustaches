@@ -10,9 +10,16 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,7 +50,10 @@ public class RecordingsActivity extends AppCompatActivity {
         String[] duration= new String[list.size()];
         String[] path = new String[list.size()];
         Bitmap[] image = new Bitmap[list.size()];
+        int[] keys = new int[list.size()];
         for (int i = 0; i < list.size(); i++){
+            keys[i] = list.get(i).getKey();
+            Log.d("KEY", String.valueOf(keys[i]));
             videoName[i] = list.get(i).getTag();
             Log.d("Video tag", videoName[i]);
             Log.d("Video tag", "LOL");
@@ -58,7 +68,7 @@ public class RecordingsActivity extends AppCompatActivity {
         binding.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Item in grid clicked
+                changeTag(path[i], duration[i], videoName[i], keys[i]);
             }
         });
 
@@ -71,5 +81,37 @@ public class RecordingsActivity extends AppCompatActivity {
 
         return media.getFrameAtTime();
 
+    }
+
+    public void changeTag(String video, String duration, String tag, int key){
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.save_tag_popup, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(getWindow().getDecorView().getRootView(), Gravity.CENTER, 0, 0);
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                EditText tagField = popupView.findViewById(R.id.tagField);
+                if (tagField.getText().equals("")) {
+                    Toast.makeText(getApplicationContext(), "All Field is required ....", Toast.LENGTH_SHORT).show();
+                } else {
+                    String newTag = tagField.getText().toString();
+                    DatabaseClass.getDatabase(getApplicationContext()).getDao().updateData(video, duration, newTag, key);
+                    finish();
+                }
+                return true;
+            }
+        });
     }
 }

@@ -20,8 +20,8 @@ public interface Daoclass {
     List<UserModel> getAllData();
 
     //DELETE DATA
-    @Query("delete from user where `key`= :id")
-    void deleteData(int id);
+    @Query("delete from user where `key`= :key")
+    void deleteData(int key);
 
     //Update Data
 

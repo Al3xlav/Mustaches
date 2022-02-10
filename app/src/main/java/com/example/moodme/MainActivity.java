@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,11 +31,16 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.moodme.Adapter.adapter_helper;
+import com.example.moodme.Adapter.recycler_adapter;
 import com.example.moodme.EntityClass.UserModel;
 import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.Frame;
 import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.Texture;
@@ -42,6 +48,7 @@ import com.google.ar.sceneform.ux.AugmentedFaceNode;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,9 +57,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements recycler_adapter.ListItemClickListener {
     private ModelRenderable modelRenderable;
-    private Texture texture;
+    private Texture mustache;
     private boolean isAdded = false;
     private final HashMap < AugmentedFace, AugmentedFaceNode > faceNodeMap = new HashMap < > ();
     private Button recordingBtn, recordingsListBtn;
@@ -64,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private long tStart;
     private long tEnd;
     private File video;
+    private RecyclerView phoneRecycler;
+    private RecyclerView.Adapter adapter;
+    private int mustIndex = 0;
+    private AugmentedFaceNode augmentedFaceMode;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -71,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        phoneRecycler = findViewById(R.id.my_recycler);
+        phoneRecycler();
 
         customArFragment = (CustomArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
 
@@ -169,32 +183,103 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void phoneRecycler() {
+
+        //All Gradients
+        GradientDrawable gradient2 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffd4cbe5, 0xffd4cbe5});
+        GradientDrawable gradient1 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xff7adccf, 0xff7adccf});
+        GradientDrawable gradient3 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xfff7c59f, 0xFFf7c59f});
+        GradientDrawable gradient4 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffb8d7f5, 0xffb8d7f5});
+
+
+        phoneRecycler.setHasFixedSize(true);
+        phoneRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        ArrayList<adapter_helper> phonelocations = new ArrayList<>();
+        phonelocations.add(new adapter_helper(gradient1, R.drawable.must_1));
+        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_2));
+        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_3));
+        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_4));
+        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_5));
+
+
+        adapter = new recycler_adapter(phonelocations, (recycler_adapter.ListItemClickListener) this);
+        phoneRecycler.setAdapter(adapter);
+
+    }
+
+    @Override
+    public void onphoneListClick(int clickedItemIndex) {
+        Log.d("INDEX", "HUI");
+            switch (clickedItemIndex){
+                case 0:
+                    faceNodeMap.clear();
+                    try{
+                        augmentedFaceMode.setParent(null);
+                    }
+                    catch (Exception e){
+                    }
+                    AugmentedFaceDisplay(R.drawable.must_1);
+                    break;
+                case 1:
+                    faceNodeMap.clear();
+                    try{
+                        augmentedFaceMode.setParent(null);
+                    }
+                    catch (Exception e){
+                    }
+                    AugmentedFaceDisplay(R.drawable.must_2);
+                    break;
+                case 2:
+                    faceNodeMap.clear();
+                    try{
+                        augmentedFaceMode.setParent(null);
+                    }
+                    catch (Exception e){
+                    }
+                    AugmentedFaceDisplay(R.drawable.must_3);
+                    break;
+                case 3:
+                    faceNodeMap.clear();
+                    try{
+                        augmentedFaceMode.setParent(null);
+                    }
+                    catch (Exception e){
+                    }
+                    AugmentedFaceDisplay(R.drawable.must_4);
+                    break;
+                case 4:
+                    faceNodeMap.clear();
+                    try{
+                        augmentedFaceMode.setParent(null);
+                    }
+                    catch (Exception e){
+                    }
+                    AugmentedFaceDisplay(R.drawable.must_5);
+                    break;
+        }
+
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void faceTrack() {
-        ModelRenderable.builder()
-                .setSource(this, R.raw.fox_face)
-                .build()
-                .thenAccept(rendarable -> {
-                    this.modelRenderable = rendarable;
-                    this.modelRenderable.setShadowCaster(false);
-                    this.modelRenderable.setShadowReceiver(false);
-
-                })
-                .exceptionally(throwable -> {
-                    Toast.makeText(this, "error loading model", Toast.LENGTH_SHORT).show();
-                    return null;
-                });
+//        ModelRenderable.builder()
+//                .setSource(this, R.raw.scene)
+//                .build()
+//                .thenAccept(rendarable -> {
+//                    this.modelRenderable = rendarable;
+//                    this.modelRenderable.setShadowCaster(false);
+//                    this.modelRenderable.setShadowReceiver(false);
+//
+//                })
+//                .exceptionally(throwable -> {
+//                    Toast.makeText(this, "error loading model", Toast.LENGTH_SHORT).show();
+//                    return null;
+//                });
 
         // Load the face mesh texture.(2D texture on face)
         // Save the texture(.png file) in drawable folder.
-        Texture.builder()
-                .setSource(this, R.drawable.fox_face_mesh_texture)
-                .build()
-                .thenAccept(textureModel -> this.texture = textureModel)
-                .exceptionally(throwable -> {
-                    Toast.makeText(this, "cannot load texture", Toast.LENGTH_SHORT).show();
-                    return null;
-                });
 
         assert customArFragment != null;
 
@@ -203,9 +288,9 @@ public class MainActivity extends AppCompatActivity {
         // occlusion works correctly.
         customArFragment.getArSceneView().setCameraStreamRenderPriority(Renderable.RENDER_PRIORITY_FIRST);
         customArFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
-            if (modelRenderable == null || texture == null) {
-                return;
-            }
+//            if (modelRenderable == null || texture == null) {
+//                return;
+//            }
             Frame frame = customArFragment.getArSceneView().getArFrame();
             assert frame != null;
 
@@ -219,14 +304,13 @@ public class MainActivity extends AppCompatActivity {
 
             // Make new AugmentedFaceNodes for any new faces.
             for (AugmentedFace augmentedFace: augmentedFaces) {
-                if (isAdded) return;
+                if (faceNodeMap.containsKey(augmentedFace)) return;
 
-                AugmentedFaceNode augmentedFaceMode = new AugmentedFaceNode(augmentedFace);
+                augmentedFaceMode = new AugmentedFaceNode(augmentedFace);
                 augmentedFaceMode.setParent(customArFragment.getArSceneView().getScene());
-                augmentedFaceMode.setFaceRegionsRenderable(modelRenderable);
-                augmentedFaceMode.setFaceMeshTexture(texture);
+                augmentedFaceMode.setFaceMeshTexture(mustache);
+//                augmentedFaceMode.setFaceRegionsRenderable(modelRenderable);
                 faceNodeMap.put(augmentedFace, augmentedFaceMode);
-                isAdded = true;
 
                 // Remove any AugmentedFaceNodes associated with
                 // an AugmentedFace that stopped tracking.
@@ -240,6 +324,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void AugmentedFaceDisplay(int resource){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Texture.builder()
+                    .setSource(this, resource)
+                    .build()
+                    .thenAccept(texture -> this.mustache = texture)
+                    .exceptionally(throwable -> {
+                        Toast.makeText(this, "cannot load texture", Toast.LENGTH_SHORT).show();
+                        return null;
+                    });
+        }
+
+
     }
 
 

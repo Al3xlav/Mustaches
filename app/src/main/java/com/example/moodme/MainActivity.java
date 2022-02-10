@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -49,10 +50,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -61,11 +64,11 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
     private ModelRenderable modelRenderable;
     private Texture mustache;
     private boolean isAdded = false;
-    private final HashMap < AugmentedFace, AugmentedFaceNode > faceNodeMap = new HashMap < > ();
+    private final HashMap<AugmentedFace, AugmentedFaceNode> faceNodeMap = new HashMap<>();
     private Button recordingBtn, recordingsListBtn;
     private ImageCapture imageCapture;
     private VideoCapture videoCapture;
-    private ListenableFuture < ProcessCameraProvider > cameraProviderFuture;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private CustomArFragment customArFragment;
     private String tag;
     private long tStart;
@@ -75,12 +78,17 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
     private RecyclerView.Adapter adapter;
     private int mustIndex = 0;
     private AugmentedFaceNode augmentedFaceMode;
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE,  Manifest.permission.CAMERA};
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkPermissions();
         setContentView(R.layout.activity_main);
 
         phoneRecycler = findViewById(R.id.my_recycler);
@@ -145,7 +153,49 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
         });
     }
 
-    public void saveTag(){
+    protected void checkPermissions() {
+        final List<String> missingPermissions = new ArrayList<String>();
+        // check all required dynamic permissions
+        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+            final int result = ContextCompat.checkSelfPermission(this, permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission);
+            }
+        }
+        if (!missingPermissions.isEmpty()) {
+            // request all missing permissions
+            final String[] permissions = missingPermissions
+                    .toArray(new String[missingPermissions.size()]);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+                    grantResults);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        // exit the app if one permission is not granted
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                }
+                // all permissions were granted
+                break;
+        }
+    }
+
+    public void saveTag() {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -216,52 +266,47 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
     @Override
     public void onphoneListClick(int clickedItemIndex) {
         Log.d("INDEX", "HUI");
-            switch (clickedItemIndex){
-                case 0:
-                    faceNodeMap.clear();
-                    try{
-                        augmentedFaceMode.setParent(null);
-                    }
-                    catch (Exception e){
-                    }
-                    AugmentedFaceDisplay(R.drawable.must_1);
-                    break;
-                case 1:
-                    faceNodeMap.clear();
-                    try{
-                        augmentedFaceMode.setParent(null);
-                    }
-                    catch (Exception e){
-                    }
-                    AugmentedFaceDisplay(R.drawable.must_2);
-                    break;
-                case 2:
-                    faceNodeMap.clear();
-                    try{
-                        augmentedFaceMode.setParent(null);
-                    }
-                    catch (Exception e){
-                    }
-                    AugmentedFaceDisplay(R.drawable.must_3);
-                    break;
-                case 3:
-                    faceNodeMap.clear();
-                    try{
-                        augmentedFaceMode.setParent(null);
-                    }
-                    catch (Exception e){
-                    }
-                    AugmentedFaceDisplay(R.drawable.must_4);
-                    break;
-                case 4:
-                    faceNodeMap.clear();
-                    try{
-                        augmentedFaceMode.setParent(null);
-                    }
-                    catch (Exception e){
-                    }
-                    AugmentedFaceDisplay(R.drawable.must_5);
-                    break;
+        switch (clickedItemIndex) {
+            case 0:
+                faceNodeMap.clear();
+                try {
+                    augmentedFaceMode.setParent(null);
+                } catch (Exception e) {
+                }
+                AugmentedFaceDisplay(R.drawable.must_1);
+                break;
+            case 1:
+                faceNodeMap.clear();
+                try {
+                    augmentedFaceMode.setParent(null);
+                } catch (Exception e) {
+                }
+                AugmentedFaceDisplay(R.drawable.must_2);
+                break;
+            case 2:
+                faceNodeMap.clear();
+                try {
+                    augmentedFaceMode.setParent(null);
+                } catch (Exception e) {
+                }
+                AugmentedFaceDisplay(R.drawable.must_3);
+                break;
+            case 3:
+                faceNodeMap.clear();
+                try {
+                    augmentedFaceMode.setParent(null);
+                } catch (Exception e) {
+                }
+                AugmentedFaceDisplay(R.drawable.must_4);
+                break;
+            case 4:
+                faceNodeMap.clear();
+                try {
+                    augmentedFaceMode.setParent(null);
+                } catch (Exception e) {
+                }
+                AugmentedFaceDisplay(R.drawable.must_5);
+                break;
         }
 
 
@@ -305,10 +350,10 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
             // 3.Set the face region Renderable. Extracting the face mesh and
             // rendering the face effect is added to a listener on
             // the scene that gets called on every processed camera frame.
-            Collection < AugmentedFace > augmentedFaces = frame.getUpdatedTrackables(AugmentedFace.class);
+            Collection<AugmentedFace> augmentedFaces = frame.getUpdatedTrackables(AugmentedFace.class);
 
             // Make new AugmentedFaceNodes for any new faces.
-            for (AugmentedFace augmentedFace: augmentedFaces) {
+            for (AugmentedFace augmentedFace : augmentedFaces) {
                 if (faceNodeMap.containsKey(augmentedFace)) return;
 
                 augmentedFaceMode = new AugmentedFaceNode(augmentedFace);
@@ -319,8 +364,8 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
 
                 // Remove any AugmentedFaceNodes associated with
                 // an AugmentedFace that stopped tracking.
-                Iterator < Map.Entry < AugmentedFace, AugmentedFaceNode >> iterator = faceNodeMap.entrySet().iterator();
-                Map.Entry < AugmentedFace, AugmentedFaceNode > entry = iterator.next();
+                Iterator<Map.Entry<AugmentedFace, AugmentedFaceNode>> iterator = faceNodeMap.entrySet().iterator();
+                Map.Entry<AugmentedFace, AugmentedFaceNode> entry = iterator.next();
                 AugmentedFace face = entry.getKey();
                 while (face.getTrackingState() == TrackingState.STOPPED) {
                     AugmentedFaceNode node = entry.getValue();
@@ -331,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
         });
     }
 
-    private void AugmentedFaceDisplay(int resource){
+    private void AugmentedFaceDisplay(int resource) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Texture.builder()
@@ -392,6 +437,7 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
             String vidFilePath = movieDir.getAbsolutePath() + "/" + timestamp + ".mp4";
 
             File vidFile = new File(vidFilePath);
+
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling

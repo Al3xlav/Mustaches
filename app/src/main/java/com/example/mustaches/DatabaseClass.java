@@ -1,4 +1,4 @@
-package com.example.moodme;
+package com.example.mustaches;
 
 
 import android.content.Context;
@@ -7,8 +7,8 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.moodme.DaoClass.Daoclass;
-import com.example.moodme.EntityClass.UserModel;
+import com.example.mustaches.DaoClass.Daoclass;
+import com.example.mustaches.EntityClass.UserModel;
 
 @Database(entities = {UserModel.class}, version = 1)
 public abstract class DatabaseClass extends RoomDatabase {

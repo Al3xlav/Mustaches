@@ -1,4 +1,4 @@
-package com.example.moodme;
+package com.example.mustaches;
 
 import android.content.Context;
 

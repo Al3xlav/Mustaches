@@ -1,4 +1,4 @@
-package com.example.moodme;
+package com.example.mustaches;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -35,13 +33,12 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.moodme.Adapter.adapter_helper;
-import com.example.moodme.Adapter.recycler_adapter;
-import com.example.moodme.EntityClass.UserModel;
+import com.example.mustaches.Adapter.adapter_helper;
+import com.example.mustaches.Adapter.recycler_adapter;
+import com.example.mustaches.EntityClass.UserModel;
 import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.Frame;
 import com.google.ar.core.TrackingState;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.Texture;
@@ -241,21 +238,21 @@ public class MainActivity extends AppCompatActivity implements recycler_adapter.
     private void phoneRecycler() {
 
         //All Gradients
-        GradientDrawable gradient2 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffd4cbe5, 0xffd4cbe5});
-        GradientDrawable gradient1 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xff7adccf, 0xff7adccf});
+        GradientDrawable gradient2 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffe53c3c, 0xffe57373});
+        GradientDrawable gradient1 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffeb9234, 0xfff1b370});
         GradientDrawable gradient3 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xfff7c59f, 0xFFf7c59f});
-        GradientDrawable gradient4 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffb8d7f5, 0xffb8d7f5});
+        GradientDrawable gradient4 = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0xffeff478, 0xfff9f9be});
 
 
         phoneRecycler.setHasFixedSize(true);
         phoneRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         ArrayList<adapter_helper> phonelocations = new ArrayList<>();
-        phonelocations.add(new adapter_helper(gradient1, R.drawable.must_1));
-        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_2));
-        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_3));
-        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_4));
-        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_5));
+        phonelocations.add(new adapter_helper(gradient1, R.drawable.must_1_prev));
+        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_2_prev));
+        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_3_prev));
+        phonelocations.add(new adapter_helper(gradient4, R.drawable.must_4_prev));
+        phonelocations.add(new adapter_helper(gradient2, R.drawable.must_5_prev));
 
 
         adapter = new recycler_adapter(phonelocations, (recycler_adapter.ListItemClickListener) this);

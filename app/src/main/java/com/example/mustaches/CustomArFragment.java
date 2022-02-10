@@ -1,4 +1,4 @@
-package com.example.moodme;
+package com.example.mustaches;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

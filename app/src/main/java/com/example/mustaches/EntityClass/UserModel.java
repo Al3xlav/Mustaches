@@ -1,11 +1,9 @@
-package com.example.moodme.EntityClass;
+package com.example.mustaches.EntityClass;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import java.io.File;
 
 @Entity(tableName = "user")
 public class UserModel {

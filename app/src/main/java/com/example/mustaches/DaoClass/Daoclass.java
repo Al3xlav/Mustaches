@@ -1,12 +1,11 @@
-package com.example.moodme.DaoClass;
+package com.example.mustaches.DaoClass;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.moodme.EntityClass.UserModel;
+import com.example.mustaches.EntityClass.UserModel;
 
-import java.io.File;
 import java.util.List;
 
 @Dao
